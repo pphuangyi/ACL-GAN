@@ -69,11 +69,16 @@ if opts.trainer == 'aclgan':
     style_dim = config['gen']['style_dim']
     trainer = aclgan_Trainer(config)
 else:
-    sys.exit("Only support aclgan)
+    sys.exit("Only support aclgan")
 
 def focus_translation(x_fg, x_bg, x_focus):
     x_map = (x_focus+1)/2
     x_map = x_map.repeat(1, 3, 1, 1)
+
+    # Yi added the following two lines
+    i, j, k, l = x_map.size()
+    x_bg = x_bg[:i, :j, :k, :l]
+
     return (torch.mul((x_fg+1)/2, x_map) + torch.mul((x_bg+1)/2, 1-x_map))*2-1
 
 if opts.trainer == 'aclgan':
@@ -85,8 +90,8 @@ if opts.trainer == 'aclgan':
         state_dict = pytorch03_to_pytorch04(torch.load(opts.checkpoint), opts.trainer)
         trainer.gen_AB.load_state_dict(state_dict['AB'])
         trainer.gen_BA.load_state_dict(state_dict['BA'])
-    
-    
+
+
     trainer.cuda()
     trainer.eval()
     Gab = trainer.gen_AB.encode if opts.a2b else trainer.gen_BA.encode # encode function
@@ -104,8 +109,9 @@ if opts.trainer == 'aclgan':#    # Start testing
     count_max = 0
     style_fixed = Variable(torch.randn(opts.num_style*3, style_dim, 1, 1).cuda(), volatile=True)
     for i, (images, names) in enumerate(zip(data_loader, image_names)):
-        if i>=3000:
-            break
+        # Yi comment out the following two lines
+        # if i>=3000:
+        #     break
         if opts.compute_CIS:
             cur_preds = []
         print(names[1])
@@ -151,6 +157,12 @@ if opts.trainer == 'aclgan':#    # Start testing
             if config['focus_loss']>0:
                 img,mask = outputs_til.split(3,1)
                 outputs_til = focus_translation(img, images, mask)
+
+            # Yi added the following two lines
+            i, j, k, l = outputs_til.size()
+            images = images[:i, :j, :k, :l]
+            # print(outputs_til.size())
+
             cnt = torch.mean(outputs_til-images)
 #            if (cnt<0.07):
 #                continue
@@ -204,6 +216,6 @@ if opts.trainer == 'aclgan':#    # Start testing
         print("Inception Score: {}".format(np.exp(np.mean(IS))))
     if opts.compute_CIS:
         print("conditional Inception Score: {}".format(np.exp(np.mean(CIS))))
-        
+
 else:
     pass

@@ -23,8 +23,8 @@ gan_w: 1                      # weight of adversarial loss
 gan_cw: 0.2                   # weight of council loss
 focus_loss: 0.025             # weight of focus loss
 focus_delta: 0.001            # hyper parameter for focus loss
-focus_upper: 0.5              # hyper parameter for focus loss
-focus_lower: 0.3              # hyper parameter for focus loss
+focus_upper: 0.1              # hyper parameter for focus loss
+focus_lower: 0.05              # hyper parameter for focus loss
 focus_epsilon: 0.01           # hyper parameter for focus loss
 recon_x_w: 1                  # weight of image reconstruction loss
 recon_s_w: 1                  # weight of style reconstruction loss
@@ -61,5 +61,5 @@ num_workers: 8                              # number of data loading threads
 new_size: 256                               # first resize the shortest image side to this size
 crop_image_height: 256                      # random crop image of this height
 crop_image_width: 256                       # random crop image of this width
-data_root: /data/datasets/cyclegan_benchmarking/datasets/celeba_male2female/      # dataset folder location
-data_kind: male2female
+data_root: /data/datasets/cyclegan_benchmarking/datasets/glasses_reversed/              # dataset folder location
+data_kind: glassesAdd

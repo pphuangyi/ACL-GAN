@@ -42,7 +42,6 @@ if not os.path.exists(opts.output_folder):
 config = get_config(opts.config)
 opts.num_style = 1 if opts.style != '' else opts.num_style
 
-
 # Setup model and data loader
 config['vgg_model_path'] = opts.output_path
 if opts.trainer == 'aclgan':
@@ -50,7 +49,6 @@ if opts.trainer == 'aclgan':
     trainer = aclgan_Trainer(config)
 else:
     sys.exit("Only support aclgan")
-
 
 if opts.trainer == 'aclgan':
     try:
@@ -75,11 +73,6 @@ if opts.trainer == 'aclgan':
 def focus_translation(x_fg, x_bg, x_focus):
     x_map = (x_focus+1)/2
     x_map = x_map.repeat(1, 3, 1, 1)
-
-    # Yi added the following two lines
-    i, j, k, l = x_map.size()
-    x_bg = x_bg[:i, :j, :k, :l]
-
     return (torch.mul((x_fg+1)/2, x_map) + torch.mul((x_bg+1)/2, 1-x_map))*2-1
 
 
@@ -93,7 +86,6 @@ else:
         new_size = config['new_size_b']
 
 with torch.no_grad():
-    print('new_size=', new_size)
     transform = transforms.Compose([transforms.Resize(new_size),
                                     transforms.ToTensor(),
                                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -130,7 +122,7 @@ with torch.no_grad():
                 vutils.save_image(outputs_mask.data, path_mask, padding=0, normalize=True)
                 vutils.save_image(outputs_img.data, path_img, padding=0, normalize=True)
 
-
+    
     else:
         pass
 

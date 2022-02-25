@@ -25,11 +25,13 @@ class aclgan_Trainer(nn.Module):
         self.instancenorm = nn.InstanceNorm2d(512, affine=False)
         self.style_dim = hyperparameters['gen']['style_dim']
 
+
         # fix the noise used in sampling
         display_size = int(hyperparameters['display_size'])
         self.z_1 = torch.randn(display_size, self.style_dim, 1, 1).cuda()
         self.z_2 = torch.randn(display_size, self.style_dim, 1, 1).cuda()
         self.z_3 = torch.randn(display_size, self.style_dim, 1, 1).cuda()
+
 
         # Setup the optimizers
         beta1 = hyperparameters['beta1']
